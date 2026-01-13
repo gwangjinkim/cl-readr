@@ -9,12 +9,14 @@
                :local-time)
   :components ((:module "src"
                 :components
-                ((:file "packages"))))
+                ((:file "packages")
+                 (:file "read"))))
   :in-order-to ((asdf:test-op (asdf:test-op "cl-readr/tests"))))
 
 (asdf:defsystem "cl-readr/tests"
   :depends-on (:cl-readr :fiveam)
   :components ((:module "tests"
                 :components
-                ((:file "main"))))
+                ((:file "main")
+                 (:file "m1-basic"))))
   :perform (asdf:test-op (o c) (symbol-call :fiveam :run! :cl-readr)))
