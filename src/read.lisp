@@ -130,3 +130,12 @@
      
      ;; We pass this to data-to-tibble.
      (data-to-tibble raw-data col-names n-max)))
+
+(defvar *default-readr-options* '())
+
+(defmacro with-readr-options ((&key (skip 0) (n-max nil) (comment nil) (skip-empty-rows t)) &body body)
+  "Binds default options for readr operations within BODY (Concept only, need to update functions to use globals if we want this to work strictly, or just use this wrapper to call functions with args injected.
+   Actually, a better DSL might just be a wrapper that calls read calls with defaults.
+   For now, this is a placeholder for future expansion."
+  (declare (ignore skip n-max comment skip-empty-rows))
+  `(progn ,@body))

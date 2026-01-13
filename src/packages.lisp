@@ -1,5 +1,6 @@
 (defpackage :cl-readr
   (:use :cl)
+  (:nicknames :readr)
   (:export #:read-csv
            #:read-tsv
            #:read-delim
@@ -12,6 +13,7 @@
            #:tokenize-line
            #:guess-column-type
            #:parse-column
+           #:with-readr-options
            #:parse-integer-safe
            #:parse-double-safe
            
