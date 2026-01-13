@@ -7,7 +7,8 @@
                :cl-tibble
                :cl-ppcre
                :local-time
-               :alexandria)
+               :alexandria
+               :cl-excel)
   :components ((:module "src"
                 :components
                 ((:file "packages")

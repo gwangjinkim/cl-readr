@@ -5,6 +5,7 @@
            #:read-delim
            #:read-file
            #:read-lines
+           #:read-excel
            #:tokenize-line
            #:guess-column-type
            #:parse-column
