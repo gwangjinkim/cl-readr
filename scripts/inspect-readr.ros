@@ -1,0 +1,22 @@
+#!/usr/bin/env ros
+;; -*- mode: lisp; -*-
+(require :asdf)
+(require 'sb-introspect)
+
+(let* ((root (uiop:getcwd))
+       (asd  (merge-pathnames "cl-readr.asd" root)))
+  (asdf:load-asd asd))
+
+(ql:quickload :cl-readr)
+
+(format t "Inspecting CL-READR symbols...~%")
+
+;; Inspect READ-CSV signature
+(when (fboundp 'cl-readr:read-csv)
+  (format t "Arglist of READ-CSV: ~a~%" (sb-introspect:function-lambda-list #'cl-readr:read-csv)))
+
+;; Inspect READ-DELIM signature
+(when (fboundp 'cl-readr:read-delim)
+  (format t "Arglist of READ-DELIM: ~a~%" (sb-introspect:function-lambda-list #'cl-readr:read-delim)))
+
+(uiop:quit 0)

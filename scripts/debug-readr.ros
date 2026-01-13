@@ -1,0 +1,14 @@
+#!/usr/bin/env ros
+;; -*- mode: lisp; -*-
+(require :asdf)
+
+(let* ((root (uiop:getcwd))
+       (asd  (merge-pathnames "cl-readr.asd" root)))
+  (asdf:load-asd asd))
+
+(ql:quickload :cl-readr)
+
+(format t "~&Exports of CL-READR:~%")
+(do-external-symbols (s (find-package :cl-readr))
+  (format t "~S~%" s))
+(uiop:quit 0)
