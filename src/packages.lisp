@@ -6,6 +6,9 @@
            #:read-file
            #:read-lines
            #:read-excel
+           #:write-csv
+           #:write-tsv
+           #:write-excel
            #:tokenize-line
            #:guess-column-type
            #:parse-column

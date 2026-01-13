@@ -14,7 +14,8 @@
                 ((:file "packages")
                  (:file "tokenize")
                  (:file "parse")
-                 (:file "read"))))
+                 (:file "read")
+                 (:file "write"))))
   :in-order-to ((asdf:test-op (asdf:test-op "cl-readr/tests"))))
 
 (asdf:defsystem "cl-readr/tests"
@@ -26,5 +27,6 @@
                  (:file "m2-delim")
                  (:file "m3-parse")
                  (:file "m4-tibble")
-                 (:file "m5-robust"))))
+                 (:file "m5-robust")
+                 (:file "m7-write"))))
   :perform (asdf:test-op (o c) (symbol-call :fiveam :run! :cl-readr)))
