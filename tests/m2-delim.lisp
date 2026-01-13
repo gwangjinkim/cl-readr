@@ -28,10 +28,11 @@
     (close s)
     (unwind-protect
          (let ((result (cl-readr:read-delim p #\,)))
-            ;; For M2, we expect list of lists of strings if not yet tibble? 
-            ;; M2 goal says "Basic tokenizer/splitter". 
-            ;; Let's assume read-delim returns list of lists until M4.
-            ;; OR, we can start returning tibbles early but with string cols independently.
-            ;; For now, let's just inspect the result structure or assume list of lists.
-            (is (equal '(("a" "b") ("1" "2")) result)))
+            ;; Now that M4 is integrated, read-delim returns a TIBBLE, not a list of lists.
+            ;; We should check that it parsed correctly.
+            ;; Headers: a, b. Row: 1, 2.
+            (let ((names (cl-tibble:tbl-names result)))
+              (is (equal '("a" "b") (coerce names 'list))))
+            (is (= 1 (aref (cl-tibble:tbl-col result "a") 0)))
+            (is (= 2 (aref (cl-tibble:tbl-col result "b") 0))))
       (uiop:delete-file-if-exists p))))

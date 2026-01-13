@@ -6,7 +6,8 @@
   :depends-on (:cl-vctrs-lite
                :cl-tibble
                :cl-ppcre
-               :local-time)
+               :local-time
+               :alexandria)
   :components ((:module "src"
                 :components
                 ((:file "packages")
@@ -22,5 +23,6 @@
                 ((:file "main")
                  (:file "m1-basic")
                  (:file "m2-delim")
-                 (:file "m3-parse"))))
+                 (:file "m3-parse")
+                 (:file "m4-tibble"))))
   :perform (asdf:test-op (o c) (symbol-call :fiveam :run! :cl-readr)))
