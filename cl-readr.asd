@@ -24,5 +24,6 @@
                  (:file "m1-basic")
                  (:file "m2-delim")
                  (:file "m3-parse")
-                 (:file "m4-tibble"))))
+                 (:file "m4-tibble")
+                 (:file "m5-robust"))))
   :perform (asdf:test-op (o c) (symbol-call :fiveam :run! :cl-readr)))
