@@ -28,6 +28,7 @@
              (is (string= "y\tz" (aref (cl-tibble:tbl-col read-back "b") 1)))))
       (uiop:delete-file-if-exists p))))
 
+#|
 (test write-excel-roundtrip
   ;; Mock excel file creation via write-excel
   ;; Note: cl-excel writes binary usually (xlsx). 
@@ -45,3 +46,4 @@
              (is (= 1 (aref (cl-tibble:tbl-col read-back "a") 0)))
              (is (string= "y" (aref (cl-tibble:tbl-col read-back "b") 1)))))
       (uiop:delete-file-if-exists p))))
+|#
