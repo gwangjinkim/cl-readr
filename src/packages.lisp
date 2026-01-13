@@ -6,6 +6,10 @@
            #:read-file
            #:read-lines
            #:tokenize-line
+           #:guess-column-type
+           #:parse-column
+           #:parse-integer-safe
+           #:parse-double-safe
            
            ;; Column types
            #:col-guess

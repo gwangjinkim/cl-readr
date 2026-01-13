@@ -11,6 +11,7 @@
                 :components
                 ((:file "packages")
                  (:file "tokenize")
+                 (:file "parse")
                  (:file "read"))))
   :in-order-to ((asdf:test-op (asdf:test-op "cl-readr/tests"))))
 
@@ -20,5 +21,6 @@
                 :components
                 ((:file "main")
                  (:file "m1-basic")
-                 (:file "m2-delim"))))
+                 (:file "m2-delim")
+                 (:file "m3-parse"))))
   :perform (asdf:test-op (o c) (symbol-call :fiveam :run! :cl-readr)))
