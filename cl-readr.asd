@@ -1,6 +1,6 @@
 (asdf:defsystem "cl-readr"
   :description "A Common Lisp port of R's readr package."
-  :author "Antigravity"
+  :author "Gwang-Jin Kim <gwang.jin.kim.phd@gmail.com>"
   :license "MIT"
   :version "0.1.0"
   :depends-on (:cl-vctrs-lite
