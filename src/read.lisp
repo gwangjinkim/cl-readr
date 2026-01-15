@@ -105,31 +105,7 @@
 (defun read-tsv (file &rest args)
   (apply #'read-delim file #\Tab args))
 
-;; EXCEL Implementation
-(defun read-excel (file &key (sheet 0) (col-names t) (n-max nil))
-  "Reads an Excel file into a tibble. 
-   SHEET can be index (0-based) or name.
-   Uses CL-EXCEL:READ-EXCEL (implied API)."
-   ;; Assumption: cl-excel:read-excel returns list of lists of values.
-   ;; We need to check if cl-excel exports 'read-excel'. 
-   ;; User said: "It reads however to list-of-list only".
-   ;; Assuming (cl-excel:read-excel file) works or returns all sheets?
-   ;; Let's assume it returns a list of sheets, or we just want one sheet?
-   ;; User said "implement concise aliases... read-excel".
-   
-   ;; Let's try to dynamic calls to avoid compile errors if I get signature wrong initially?
-   ;; No, let's assume standard usage or what user described.
-   (let ((raw-data (cl-excel:read-excel file)))
-     ;; If raw-data is list of sheets or list of rows?
-     ;; Usually cl-excel might return (((cell...)...)...).
-     ;; Let's assume it returns the content of the FIRST sheet if not specified,
-     ;; OR it returns a structure we need to access.
-     ;; For now, let's assume it returns list of lists of values for the workbook (first sheet logic?).
-     ;; Actually, user said "It reads however to list-of-list only".
-     ;; If it's single sheet: list of list.
-     
-     ;; We pass this to data-to-tibble.
-     (data-to-tibble raw-data col-names n-max)))
+
 
 (defvar *default-readr-options* '())
 

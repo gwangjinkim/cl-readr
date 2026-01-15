@@ -1,6 +1,6 @@
 # cl-readr
 
-A Common Lisp port of the R `readr` package, designed to provide fast and friendly functions to read rectangular data (like CSV, TSV, and Excel files) into `cl-tibble` data frames.
+A Common Lisp port of the R `readr` package, designed to provide fast and friendly functions to read rectangular data (like CSV and TSV files) into `cl-tibble` data frames.
 
 ## Quickstart
 
@@ -29,10 +29,10 @@ A Common Lisp port of the R `readr` package, designed to provide fast and friend
 
 -   **Tibble Integration**: All read functions return `cl-tibble` objects, integrating seamlessly with the `cl-tidyverse` ecosystem.
 -   **Rectangular Data Parsing**: Supports CSV, TSV, and custom delimiters.
--   **Excel Support**: Reads Excel files (XLSX) via `cl-excel` integration.
+
 -   **Type Inference**: Automatically guesses column types (Integer, Double, Logical, Character) based on content.
 -   **Robust Options**: Supports skipping lines, comments (`#`), max rows (`n-max`), and handling missing values (`NA`).
--   **Writing**: Functions to write tibbles back to CSV, TSV, or Excel.
+-   **Writing**: Functions to write tibbles back to CSV or TSV.
 
 ## Installation
 
@@ -40,7 +40,7 @@ A Common Lisp port of the R `readr` package, designed to provide fast and friend
 
 -   `cl-tibble`
 -   `cl-vctrs-lite`
--   `cl-excel`
+
 -   `cl-ppcre`
 -   `local-time`
 -   `alexandria`
@@ -81,11 +81,6 @@ Reads a tab-separated values (TSV) file. Same arguments as `read-csv`.
 Reads a file with a custom delimiter.
 -   `delim`: The character used to separate fields (e.g. `|`).
 
-#### `read-excel (file &key sheet col-names n-max)`
-Reads an Excel file.
--   `sheet`: The sheet name or index (0-based) to read. Defaults to first sheet.
--   `col-names`: As above.
--   `n-max`: As above.
 
 ### Writing Data
 
@@ -99,8 +94,6 @@ Writes a tibble `x` to a CSV file.
 #### `write-tsv (x file &key ...)`
 Writes a tibble `x` to a TSV file.
 
-#### `write-excel (x file)`
-Writes a tibble `x` to an Excel (.xlsx) file using `cl-excel`.
 
 ### Helper Functions
 
