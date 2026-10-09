@@ -32,7 +32,7 @@
               (is (vectorp age-col))
               ;; Should be integers (or doubles?)
               (is (= 25 (aref age-col 0)))
-              (is (null (aref age-col 2))))
+              (is (cl-vctrs-lite:na-p (aref age-col 2))))
             
             (let ((active-col (cl-tibble:tbl-col df "active")))
                (is (eq t (aref active-col 0)))))

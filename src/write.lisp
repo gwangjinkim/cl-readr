@@ -32,16 +32,21 @@
                    (unless (= i (1- ncols)) (write-char delim stream)))
           (write-char #\Newline stream))
         
-        ;; Rows
-        (let ((cols (loop for name in names collect (cl-tibble:tbl-col x name))))
+        ;; Rows. *NA* is written as NA. In logical columns T/NIL are
+        ;; TRUE/FALSE; elsewhere NIL is treated as missing, as before.
+        (let* ((cols (loop for name in names collect (cl-tibble:tbl-col x name)))
+               (logical (loop for col in cols
+                              collect (eq (cl-vctrs-lite:col-type col) :bool))))
           (loop for i from 0 below nrows do
             (loop for col in cols
+                  for lgl in logical
                   for j from 0
                   do
                   (let ((val (aref col i)))
-                    (if (null val)
-                        (write-string na stream)
-                        (write-string (quote-field val :delim delim) stream)))
+                    (cond ((cl-vctrs-lite:na-p val) (write-string na stream))
+                          (lgl (write-string (if val "TRUE" "FALSE") stream))
+                          ((null val) (write-string na stream))
+                          (t (write-string (quote-field val :delim delim) stream))))
                   (unless (= j (1- ncols)) (write-char delim stream)))
             (write-char #\Newline stream)))))))
 

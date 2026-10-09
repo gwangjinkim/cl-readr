@@ -3,14 +3,14 @@
 ;;; Constants
 (defparameter *default-na* '("NA" "") "Default strings treated as NA")
 
-;;; Missing values are nil everywhere. NIL is reserved for
+;;; Missing values are cl-vctrs-lite:*na* everywhere. NIL is reserved for
 ;;; logical FALSE, so a missing logical can no longer be confused with FALSE.
 
 ;;; Helper to check for NA
 (defun na-p (val &optional (na *default-na*))
-  (if (stringp val)
-      (member val na :test #'string=)
-      (null val)))
+  (cond ((stringp val) (member val na :test #'string=))
+        ((cl-vctrs-lite:na-p val) t)
+        (t (null val))))
 
 ;;; Number syntax. Cells are never handed to the Lisp reader unless they
 ;;; are a plain decimal number: reading arbitrary cells would intern
@@ -64,20 +64,20 @@
 
 ;;; Parsers aimed at singular values (strings or already parsed)
 (defun parse-integer-safe (val &optional (jna *default-na*))
-  "Parse VAL as an integer; NA strings and unparseable values give NIL."
+  "Parse VAL as an integer; NA strings and unparseable values give *NA*."
   (cond
     ((integerp val) val)
     ((and (stringp val) (not (na-p val jna)) (%integer-syntax-p val))
      (parse-integer (%trim val)))
-    (t nil)))
+    (t cl-vctrs-lite:*na*)))
 
 (defun parse-double-safe (val &optional (jna *default-na*))
-  "Parse VAL as a double-float; NA strings and unparseable values give NIL."
+  "Parse VAL as a double-float; NA strings and unparseable values give *NA*."
   (cond
     ((realp val) (float val 1.0d0))
     ((and (stringp val) (not (na-p val jna)) (%real-syntax-p val))
      (%read-real val))
-    (t nil)))
+    (t cl-vctrs-lite:*na*)))
 
 (defun true-double-p (val)
   "Checks if val effectively looks like a double."
@@ -88,7 +88,7 @@
 
 (defun parse-logical-safe (val &optional (jna *default-na*))
   (if (na-p val jna)
-      nil
+      cl-vctrs-lite:*na*
       (cond
         ((eq val t) t)
         ((eq val nil) nil)
@@ -139,7 +139,8 @@ Order of preference: Logical > Integer > Double > Character."
       (t :character))))
 
 (defun parse-column (vals type &key (na *default-na*))
-  "Parses a list of values into a vector of the specified type."
+  "Parses a list of values into a vector of the specified type.
+Missing values become cl-vctrs-lite:*na*."
   (ecase type
     (:integer
      (map 'vector (lambda (s) (parse-integer-safe s na)) vals))
@@ -150,6 +151,6 @@ Order of preference: Logical > Integer > Double > Character."
     (:character
      (map 'vector (lambda (s)
                     (if (na-p s na)
-                        nil
+                        cl-vctrs-lite:*na*
                         (if (stringp s) s (format nil "~a" s))))
           vals))))

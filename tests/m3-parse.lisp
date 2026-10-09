@@ -5,10 +5,10 @@
 (test parse-integer-test
   (is (equal 123 (cl-readr:parse-integer-safe "123")))
   (is (equal -45 (cl-readr:parse-integer-safe "-45")))
-  (is (null (cl-readr:parse-integer-safe "NA")))
-  (is (null (cl-readr:parse-integer-safe "")))
-  (is (null (cl-readr:parse-integer-safe "12.3"))) ;; Should fail integer parse
-  (is (null (cl-readr:parse-integer-safe "abc")))
+  (is (cl-vctrs-lite:na-p (cl-readr:parse-integer-safe "NA")))
+  (is (cl-vctrs-lite:na-p (cl-readr:parse-integer-safe "")))
+  (is (cl-vctrs-lite:na-p (cl-readr:parse-integer-safe "12.3"))) ;; Should fail integer parse
+  (is (cl-vctrs-lite:na-p (cl-readr:parse-integer-safe "abc")))
   (is (equal 7 (cl-readr:parse-integer-safe " 7 "))))
 
 (test guess-type-test
@@ -24,11 +24,23 @@
   (let ((col (cl-readr:parse-column '("1" "2" "NA") :integer)))
     (is (vectorp col))
     (is (= 1 (aref col 0)))
-    (is (null (aref col 2))))
+    (is (cl-vctrs-lite:na-p (aref col 2))))
   
   (let ((col (cl-readr:parse-column '("1.5" "2") :double)))
     (is (= 1.5d0 (aref col 0)))
     (is (= 2.0d0 (aref col 1)))))
+
+(test na-is-shared-vctrs-na
+  "Missing cells are cl-vctrs-lite:*na*, so downstream vector ops propagate them."
+  (let ((col (cl-readr:parse-column '("1" "NA" "3") :integer)))
+    (is (eq :int (cl-vctrs-lite:col-type col)))
+    (is (cl-vctrs-lite:na-p (aref (cl-vctrs-lite:v+ col 1) 1)))))
+
+(test logical-na-distinct-from-false
+  (let ((col (cl-readr:parse-column '("TRUE" "FALSE" "NA") :logical)))
+    (is (eq t (aref col 0)))
+    (is (eq nil (aref col 1)))
+    (is (cl-vctrs-lite:na-p (aref col 2)))))
 
 (test doubles-keep-double-precision
   (is (= 0.1d0 (cl-readr:parse-double-safe "0.1")))
@@ -41,7 +53,8 @@
     (declare (special cl-user::*readr-eval-probe*))
     (is (eq :character
             (cl-readr:guess-column-type '("1" "#.(setf cl-user::*readr-eval-probe* t)"))))
-    (is (null (cl-readr:parse-double-safe "#.(setf cl-user::*readr-eval-probe* t)")))
+    (is (cl-vctrs-lite:na-p
+         (cl-readr:parse-double-safe "#.(setf cl-user::*readr-eval-probe* t)")))
     (is (null cl-user::*readr-eval-probe*)))
   (is (eq :character (cl-readr:guess-column-type '("abc" "1"))))
-  (is (null (cl-readr:parse-double-safe "abc"))))
+  (is (cl-vctrs-lite:na-p (cl-readr:parse-double-safe "abc"))))
