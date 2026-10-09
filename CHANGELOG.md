@@ -16,13 +16,6 @@ All notable changes to this project are documented here. Format follows
   with `*read-eval*` NIL. Text cells also no longer intern symbols
   (topic: safe number parsing).
 
-### Fixed
-- Doubles are parsed at double precision. They were read with the default
-  single-float format and then widened, so `"0.1"` became
-  `0.10000000149011612d0`. Now `"0.1"` → `0.1d0`.
-- Integer guessing no longer accepts junk via `:junk-allowed`; surrounding
-  blanks are still accepted (`" 7 "` → 7).
-
 ### Breaking
 - **Missing values are now `cl-vctrs-lite:*na*`, not `NIL`** in every
   parsed column (`parse-integer-safe`, `parse-double-safe`,
@@ -35,7 +28,20 @@ All notable changes to this project are documented here. Format follows
   tested `(null x)` for missing should use `cl-vctrs-lite:na-p`
   (topic: unified NA).
 
+### Fixed
+- Doubles are parsed at double precision. They were read with the default
+  single-float format and then widened, so `"0.1"` became
+  `0.10000000149011612d0`. Now `"0.1"` → `0.1d0`.
+- Integer guessing no longer accepts junk via `:junk-allowed`; surrounding
+  blanks are still accepted (`" 7 "` → 7).
+
 ### Changed
 - `write-delim`/`write-csv`/`write-tsv` write `*na*` as the NA string,
   write logical columns as `TRUE`/`FALSE`, and still write a stray `NIL`
   in non-logical columns as NA (backward compatible with older tibbles).
+
+- Stopped tracking `build/` (91 files, 2.3M): the ASDF/Roswell compile
+  cache that `make test` writes via `XDG_CACHE_HOME=$(PWD)/build`. It held
+  compiled fasls, including Quicklisp internals and absolute local paths.
+  `build/` is now in `.gitignore`; local files are untouched. Old copies
+  remain in history (topic: repo hygiene).
