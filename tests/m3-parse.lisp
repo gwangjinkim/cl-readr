@@ -58,3 +58,30 @@
     (is (null cl-user::*readr-eval-probe*)))
   (is (eq :character (cl-readr:guess-column-type '("abc" "1"))))
   (is (cl-vctrs-lite:na-p (cl-readr:parse-double-safe "abc"))))
+
+(test parse-column-failures-warn-once
+  "D2: like R's readr, unparseable cells become NA with one warning."
+  (let ((warnings '()))
+    (handler-bind ((cl-readr:parse-failure
+                     (lambda (w) (push w warnings) (muffle-warning w))))
+      (let ((col (cl-readr:parse-column '("1" "x" "NA" "3.5") :integer)))
+        (is (= 1 (aref col 0)))
+        (is (cl-vctrs-lite:na-p (aref col 1)))
+        (is (cl-vctrs-lite:na-p (aref col 2)))
+        (is (cl-vctrs-lite:na-p (aref col 3)))))
+    (is (= 1 (length warnings)))
+    (is (= 2 (cl-readr:parse-failure-count (first warnings))))
+    (is (equal '("x" "3.5") (cl-readr:parse-failure-inputs (first warnings))))))
+
+(test parse-column-logical-error-is-na
+  (handler-bind ((cl-readr:parse-failure #'muffle-warning))
+    (is (cl-vctrs-lite:na-p (aref (cl-readr:parse-column '("maybe") :logical) 0)))))
+
+(test read-csv-does-not-warn-on-guessed-types
+  (uiop:with-temporary-file (:stream s :pathname p :direction :output)
+    (format s "a,b~%1,x~%2,~%")
+    (finish-output s)
+    (close s)
+    (handler-bind ((cl-readr:parse-failure
+                     (lambda (w) (declare (ignore w)) (fail "unexpected parse warning"))))
+      (is (= 2 (cl-tibble:tbl-nrows (cl-readr:read-csv p)))))))

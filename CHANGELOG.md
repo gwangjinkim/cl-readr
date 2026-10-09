@@ -6,6 +6,19 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+- `parse-column` signals one `parse-failure` warning per column when
+  non-missing cells cannot be parsed as the requested type (they become
+  `*na*`), like R's readr ("2 parsing failures"). Readers:
+  `parse-failure-count`, `parse-failure-type`, `parse-failure-inputs`.
+  Type guessing in `read-csv` never triggers it (decision D2, topic:
+  R-like parse failures).
+
+### Fixed
+- `parse-column` with `:logical` put the keyword `:ERROR` into the column
+  for cells that were not a logical value; they are now `*na*` (with the
+  warning above).
+
 ### Security
 - **CSV cells could execute arbitrary Lisp code.** `true-double-p` (used by
   type guessing on every cell) called `read-from-string` without binding
@@ -45,3 +58,7 @@ All notable changes to this project are documented here. Format follows
   compiled fasls, including Quicklisp internals and absolute local paths.
   `build/` is now in `.gitignore`; local files are untouched. Old copies
   remain in history (topic: repo hygiene).
+
+### Tests
+- New `parse-column-failures-warn-once`, `parse-column-logical-error-is-na`,
+  `read-csv-does-not-warn-on-guessed-types`. Suite 78/78.

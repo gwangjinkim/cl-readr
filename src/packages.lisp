@@ -16,6 +16,10 @@
            #:with-readr-options
            #:parse-integer-safe
            #:parse-double-safe
+           #:parse-failure
+           #:parse-failure-count
+           #:parse-failure-type
+           #:parse-failure-inputs
            
            ;; Column types
            #:col-guess

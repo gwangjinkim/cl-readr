@@ -138,19 +138,47 @@ Order of preference: Logical > Integer > Double > Character."
       (is-double :double)
       (t :character))))
 
-(defun parse-column (vals type &key (na *default-na*))
-  "Parses a list of values into a vector of the specified type.
-Missing values become cl-vctrs-lite:*na*."
+(define-condition parse-failure (warning)
+  ((count :initarg :count :reader parse-failure-count)
+   (type :initarg :type :reader parse-failure-type)
+   (inputs :initarg :inputs :reader parse-failure-inputs
+           :documentation "The cells that failed, in order (at most 10)."))
+  (:report (lambda (c stream)
+             (format stream "~d parsing failure~:p (expected ~(~a~))~@[: ~{~s~^, ~}~]."
+                     (parse-failure-count c) (parse-failure-type c)
+                     (parse-failure-inputs c))))
+  (:documentation "Signalled by PARSE-COLUMN when non-missing cells cannot
+be parsed as the requested type; they become *NA* (like R's readr)."))
+
+(defun %parse-column-values (vals type na)
   (ecase type
     (:integer
      (map 'vector (lambda (s) (parse-integer-safe s na)) vals))
     (:double
      (map 'vector (lambda (s) (parse-double-safe s na)) vals))
     (:logical
-     (map 'vector (lambda (s) (parse-logical-safe s na)) vals))
+     (map 'vector (lambda (s)
+                    (let ((v (parse-logical-safe s na)))
+                      (if (eq v :error) cl-vctrs-lite:*na* v)))
+          vals))
     (:character
      (map 'vector (lambda (s)
                     (if (na-p s na)
                         cl-vctrs-lite:*na*
                         (if (stringp s) s (format nil "~a" s))))
           vals))))
+
+(defun parse-column (vals type &key (na *default-na*))
+  "Parses a list of values into a vector of the specified type.
+Missing values become cl-vctrs-lite:*na*. Non-missing values that cannot be
+parsed also become *na*, and one PARSE-FAILURE warning is signalled for the
+column (as R's readr does)."
+  (let* ((out (%parse-column-values vals type na))
+         (failed (loop for raw in (coerce vals 'list)
+                       for v across out
+                       when (and (cl-vctrs-lite:na-p v) (not (na-p raw na)))
+                         collect raw)))
+    (when failed
+      (warn 'parse-failure :count (length failed) :type type
+                           :inputs (subseq failed 0 (min 10 (length failed)))))
+    out))
