@@ -49,6 +49,9 @@ All notable changes to this project are documented here. Format follows
   blanks are still accepted (`" 7 "` → 7).
 
 ### Changed
+- AGENTS.md: "Parity work" section listing this repository's parity
+  milestones (RD1, RD2, RD3, RD4, RD5, RD6) and where the plan and backlog live
+  (topic: parity plan).
 - `write-delim`/`write-csv`/`write-tsv` write `*na*` as the NA string,
   write logical columns as `TRUE`/`FALSE`, and still write a stray `NIL`
   in non-logical columns as NA (backward compatible with older tibbles).
